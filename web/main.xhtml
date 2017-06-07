@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <Title>Главная страница</Title>
+    <script type="text/javascript">
+    function areaClick(mouseEvent) {
+    var r;
+    if(document.getElementById("mainform:r1").checked)
+        r=1;
+        if(document.getElementById("mainform:r2").checked)
+            r=1.5;
+        if(document.getElementById("mainform:r3").checked)
+            r=2;
+        if(document.getElementById("mainform:r4").checked)
+            r=2.5;
+        if(document.getElementById("mainform:r5").checked)
+            r=3;
+
+    var x = 221/80*r*((mouseEvent.pageX - getLeftOffset(document.getElementById("graph")))/document.getElementById("graph").clientWidth - 0.5 );
+    var y = 221/80*r*(( mouseEvent.pageY - getTopOffset(document.getElementById("graph")))/document.getElementById("graph").clientHeight - 0.5 );
+    mx = document.getElementById("submit:mx");
+        mx.value = x;
+    my = document.getElementById("submit:my");
+        my.value = -y;
+    var btn = document.getElementById("submit");
+    btn.click();
+    }
+    function getTopOffset(elem) {
+    var curtop = 0;
+    var curtopscroll = 0;
+    if (elem.offsetParent) {
+    do {
+    curtop += elem.offsetTop;
+    curtopscroll += elem.offsetParent ? elem.offsetParent.scrollTop : 0;
+    } while (elem = elem.offsetParent);
+
+    return(curtop - curtopscroll);
+    }
+    }
+    function getLeftOffset(elem) {
+    var curtop = 0;
+    var curtopscroll = 0;
+    if (elem.offsetParent) {
+    do {
+    curtop += elem.offsetLeft;
+    curtopscroll += elem.offsetParent ? elem.offsetParent.scrollLeft : 0;
+    } while (elem = elem.offsetParent);
+    return(curtop - curtopscroll);
+    }
+    }
+    </script>
+</h:head>
+<f:view>
+    <h:graphicImage url="data:image/jpg;base64,#{areaChecker.img}" id="graph" onclick="areaClick(event)" >
+    </h:graphicImage>
+    <h:form id="submit">
+        <h:inputHidden  id="mx" value="#{areaChecker.mx}"/>
+        <h:inputHidden  id="my" value="#{areaChecker.my}"/>
+        <f:ajax event="click" execute="mx my" render="graph :mainform:panelfor:"  listener="#{areaChecker.clickListener}" />
+    </h:form>
+    <h:form id="mainform">
+        <div>X:
+        <h:selectOneMenu id="x" value="#{input.x}">
+            <f:selectItem itemValue="-5"/>
+            <f:selectItem itemValue="-4"/>
+            <f:selectItem itemValue="-3"/>
+            <f:selectItem itemValue="-2"/>
+            <f:selectItem itemValue="-1"/>
+            <f:selectItem itemValue="0"/>
+            <f:selectItem itemValue="1"/>
+            <f:selectItem itemValue="2"/>
+            <f:selectItem itemValue="3"/>
+        </h:selectOneMenu>
+        </div>
+        <div>R:
+        <h:selectBooleanCheckbox id="r1" title="1" value="#{input.r1}"  >
+            <f:ajax   render="r1 r2 r3 r4 r5"/>
+        </h:selectBooleanCheckbox>
+        <h:outputLabel value="1"/>
+        <h:selectBooleanCheckbox id="r2" title="1.5" value="#{input.r2}" >
+            <f:ajax   render="r1 r2 r3 r4 r5"/>
+        </h:selectBooleanCheckbox>
+        <h:outputLabel value="1.5"/>
+        <h:selectBooleanCheckbox id="r3" title="2" value="#{input.r3}"  >
+            <f:ajax   render="r1 r2 r3 r4 r5"/>
+        </h:selectBooleanCheckbox>
+        <h:outputLabel value="2"/>
+        <h:selectBooleanCheckbox id="r4" title="2.5" value="#{input.r4}"  >
+            <f:ajax   render="r1 r2 r3 r4 r5"/>
+        </h:selectBooleanCheckbox>
+        <h:outputLabel value="2.5"/>
+        <h:selectBooleanCheckbox id="r5" title="3" value="#{input.r5}"  >
+            <f:ajax  render="r1 r2 r3 r4 r5"/>
+        </h:selectBooleanCheckbox>
+        <h:outputLabel value="3"/>
+        </div>
+        <div>Y(-3..5):
+            <h:inputText id="yIn" value="#{input.y}" validatorMessage="Out of range!">
+                <f:validateDoubleRange minimum="-3.0" maximum="5.0" for="yIn" />
+            </h:inputText>
+            <h:message for="yIn" style="color:red"/>
+        </div>
+        <div>
+        <h:commandButton value="Добавить" action="#{areaChecker.submitHandler}">
+            <f:ajax execute="yIn x" render="graph :mainform:panelfor: mainform"/>
+        </h:commandButton>
+            </div><div>
+        <h:commandButton value="Назад!" action="index"/>
+        </div><div>
+        <h:commandButton value="Очистить" action="#{areaChecker.reset}">
+            <f:ajax render="graph :mainform:panelfor:" />
+        </h:commandButton>
+        </div>
+        <h:panelGroup id="panelfor">
+            <h:dataTable id="resultTable" value="#{areaChecker.points}" var="p">
+                <h:column>
+                    <f:facet name="header" >X</f:facet>
+                    #{p.x}
+                </h:column>
+                <h:column>
+                    <f:facet name="header" >Y</f:facet>
+                    #{p.y}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">R</f:facet>
+                    #{AreaChecker.r}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Вхождение</f:facet>
+                    #{p.included}
+                </h:column>
+            </h:dataTable>
+        </h:panelGroup>
+    </h:form>
+</f:view>
+</html>
