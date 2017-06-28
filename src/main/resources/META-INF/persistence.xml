@@ -8,8 +8,8 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://locallhost:5432/lab8"/>
-            <property name="javax.persistence.jdbc.user" value="kover"/>
-            <property name="javax.persistence.jdbc.password" value="qwerty856"/>
+            <property name="javax.persistence.jdbc.user" value="Username"/>
+            <property name="javax.persistence.jdbc.password" value="Pssword"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
         </properties>
